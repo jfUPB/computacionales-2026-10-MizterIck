@@ -32,7 +32,7 @@ Por la linea de código "M=D" donde "M" es la memoria RAM y "D" uo de los regist
 El registro A y D cambian durante la ejecución del programa, y como resultado final el valor 3 queda almacenado en la dirección de memoria 16, los registros PC y A quedan con el valor 7 y el registro queda con el valor de 3. El programa termina en un bucle infinito al ejecutar "0;JMP" hacia la etiqueta END
 
 Experimento
-``` 
+``` asm
 @10
 D=A
 @5
@@ -55,9 +55,9 @@ ALU (Arithmetic Logic Unit) es la parte de la CPU que suma, resta, niega, compar
 
 Una instrucción que usa la ALU es:
 
-```
+``` asm
 D=D-A
-```
+``` 
 Esta instrucción utiliza la ALU para realizar una resta entre los valores almacenados en los registros D y A
 El resultado de la operación se guarda nuevamente en el registro D
 
@@ -76,7 +76,7 @@ Para leer el teclado, el programa accede a la dirección de memoria @KBD y obtie
 
 Identifica un bucle en el programa y explica su funcionamiento
 
-```
+``` asm
 @READKEYBOARD
 0;JMP
 ```
@@ -87,7 +87,7 @@ Este salto incondicional hace que el programa vuelva constantemente a la etiquet
 
 Escribe un programa que compare el valor almacenado en la dirección de memoria 5 con el valor 10. Si el valor es menor que 10, guarda el valor 1 en la dirección 7. Si el valor es mayor o igual a 10, guarda el valor 0 en la dirección 7.
 
-```
+``` asm
 @5
 D=M
 @10
@@ -117,7 +117,7 @@ M=1
 
 Crea un programa que use un ciclo para sumar los números del 1 al 5 y guarde el resultado en la dirección de memoria 12
 
-```
+``` asm
 @i
 M=1
 
@@ -152,6 +152,105 @@ M=D
 
 ## Bitácora de reflexión
 
+### Actividad 05
 
+``` asm
+@15
+D=A
+@i
+M=D
 
+(LOOP)
+@i
+D=M
+@26
+D=A-D
+@FINAL
+D;JEQ
+
+@i
+D=M
+
+@sum
+M=D+M
+
+@i
+M=M+1
+@LOOP
+0;JMP
+
+(FINAL)
+@sum
+D=M
+@12
+M=D
+@END
+(END)
+0;JMP
+```
+
+¿Describe con tus palabras las tres fases del ciclo Fetch-Decode-Execute. ¿Qué rol juega el Program Counter (PC) en este ciclo?
+El Fetch es cuando la CPU busca y obtiene la instrucción a realizar, Decode es cuando la decodifica o interpreta la intrucción para saber que operación debe realizar, Execute es cuando la CPU ejecuta la instrucción recibida, El program Counter es, digamos, el orden en el que la CPU lee las instrucciones, que estan guardadas en la ROM, es el que lleva el control del orden de ejecución de las instrucciones
+
+¿Cuál es la diferencia fundamental entre una instrucción-A (que empieza con @) y una instrucción-C (que involucra D, M, A, etc.) en el lenguaje ensamblador de Hack? Da un ejemplo de cada una
+Las intrucciones tipo A se encargan principalmente en guardar / establecer valores o hacer referencia a una localizacion, mientras que las instrucciones de tipo C se encargan de hacer calculos con los valores guardados, asignaciones y saltos usando los registros A, D, M y la ALU
+
+Ejemplos:
+
+tipo A:
+@10
+tipo C:
+M=D+A
+
+Explica la función de los siguientes componentes del computador Hack: el registro D, el registro A y la ALU
+El registro A es un registro que guarda direcciones de memoria o valores inmediatos y tambien determina que posicion de la RAM se accede mediante M
+El registro D guarda datos temporales, resultados de operaciones, sirve para comparar valores o transportar información
+La ALU (Arithmetic Logic Unit) es la unidad encargada de realizar operaciones aritmeticas y logicas en la computadora
+
+¿Cómo se implementa un salto condicional en Hack? Describe un ejemplo (p. ej., saltar si el valor de D es mayor que cero)
+Un salto se puede utilizar usando las etiquetas, sirviendo como puntos de referencia para que el CPU sepa hacia donde realizar el salto y una instrucción de salto (JLT, JGT, JEQ, etc.), en el que sus condiciones se realiza evaluando el valor del registro D con respecto a cero
+
+EJ: (saltar si un valor es menor que 10)
+
+@5
+D=M
+@10
+D=D-A
+@MENOR
+D;JLT
+
+@7
+M=0
+@FINAL
+0;JMP
+
+(MENOR)
+@7
+M=1
+
+@FINAL
+(FINAL)
+0;JMP
+
+¿Cómo se implementa un loop en el computador Hack? Describe un ejemplo (p. ej., un loop que decremente un valor hasta que llegue a cero)
+Se implemente utilizando una etiqueta que marca el inicio del ciclo y un salto incondicional (JMP) que hace que el programa vuelva a esa etiqueta. Tiene una condición de salida basada en una comparación/resta
+
+(LOOP)
+@i
+D=M
+@END
+D;JEQ      // si i == 0, sale del loop
+
+@i
+M=M-1      // i = i - 1, en el caso que tenga otro valor
+@LOOP
+0;JMP
+
+(END)
+0;JMP
+¿Cuál es la diferencia entre la instrucción D=M y la instrucción M=D?
+D=M copia el valor que esta en la memoria RAM[A] al registro D, mientras que M=D esta registrando un valor en el registro D en la posicion de memoria RAM[A]
+
+Describe brevemente qué se necesita para leer un valor del teclado (KBD) y para “pintar” un pixel en la pantalla (SCREEN)
+Para leer el teclado, se debe acceder a la dirección de memoria @KBD y leer su valor con D=M, donde compara registros y si un valor es distinto de cero estaria indicando que una tecla está presionada Para pintar un pixel en la pantalla, se debe escribir un valor en la memoria que comienza en @SCREEN. Al escribir -1 se encienden los píxeles correspondientes y al escribir 0 se apagan
 
