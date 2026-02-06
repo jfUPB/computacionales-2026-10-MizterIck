@@ -1,9 +1,28 @@
 # Unidad 2
 
 ## Bitácora de proceso de aprendizaje
+### Actividad 05
+```
+@10
+D=A
+@a
+M=D
+
+@5
+D=A
+@b
+M=D
+
+@a
+D=A
+@p
+M=D
+```
+
 
 
 ## Bitácora de aplicación 
+
 
 
 ## Bitácora de reflexión
