@@ -2,7 +2,7 @@
 
 ## Bitácora de proceso de aprendizaje
 ### Actividad 01
-```
+``` assembly
 (START)
 @SCREEN
 M=1
@@ -13,7 +13,7 @@ M=1
 ```
 
 ### Actividad 02
-```
+``` assembly
 (START)
 @SCREEN
 M=-1
@@ -23,7 +23,7 @@ M=-1
 0;JMP
 ```
 Actividad 03
-```
+``` assembly
 (START)
 //i = SCREEN
 @SCREEN
@@ -85,7 +85,7 @@ M=D
 0;JMP
 ```
 ### Actividad 05
-```
+``` assembly
 @10
 D=A
 @a
@@ -108,7 +108,7 @@ A=M
 M=D
 ```
 
-```
+``` assembly
 @10
 D=A
 @a
@@ -134,7 +134,7 @@ M=D
 ## Bitácora de aplicación 
 
 ### Actividad 08
-```
+``` assembly
 @10
 D=A
 @16
@@ -208,6 +208,7 @@ A=M
 
 
 ## Bitácora de reflexión
+
 
 
 
