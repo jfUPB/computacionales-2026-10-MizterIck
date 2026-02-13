@@ -133,8 +133,73 @@ M=D
 
 ## Bitácora de aplicación 
 
-### Actividad 09
+### Actividad 08
+```
+@10
+D=A
+@16
+M=D    // RAM[16] = a = 10
 
+@20
+D=A
+@17
+M=D    // RAM[17] = b = 20
+
+@16
+D=A
+@R0
+M=D    
+
+@17
+D=A
+@R1
+M=D
+
+// SE GUARDAN LAS &a y &b EN R0 Y R1 
+
+@retornoDespuesCambio
+D=A
+@R15
+M=D
+
+@swap
+0;JMP
+
+// DIRECCIÓN RETORNO
+
+(retornoDespuesCambio)
+@END
+0;JMP
+
+(END)
+0;JMP
+
+(swap)
+
+@R0
+A=M
+D=M
+@13
+M=D
+
+@R1
+A=M
+D=M
+@R0
+A=M
+M=D
+
+@13
+D=M
+@R1
+A=M
+M=D
+
+@15
+A=M
+0;JMP
+```
 ## Bitácora de reflexión
+
 
 
