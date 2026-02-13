@@ -134,6 +134,8 @@ M=D
 ## Bitácora de aplicación 
 
 ### Actividad 08
+
+PROBLEMA 1
 ``` assembly
 @10
 D=A
@@ -207,7 +209,9 @@ A=M
 <img width="1230" height="784" alt="image" src="https://github.com/user-attachments/assets/9443f0e4-731c-45df-b106-e3773cc73536" />
 
 
+PROBLEMA 2
 ## Bitácora de reflexión
+
 
 
 
