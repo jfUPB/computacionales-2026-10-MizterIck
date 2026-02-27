@@ -1124,5 +1124,5 @@ Al eliminarlos, el ciclo de vida de la memoria queda manejado automáticamente p
 Esto evita crashes impredecibles por corrupción del heap.
 
 ## Bitácora de reflexión
-## Bitácora de reflexión
+
 
