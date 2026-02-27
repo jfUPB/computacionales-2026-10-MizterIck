@@ -963,58 +963,45 @@ en el heap
 
 1. Diagnóstico del problema
 
-- Error 1: hay una fuga de memoria, se reserva memoria pero nunca se libera, la clase del constructor hace: `estadisticas = new int[3];` pero nunca se libera cuando el heroe muere. Esto ocurre porque el heroe es un objeto local que vive en el stack, `estadisticas` apunta a un arreglo que vive en el heap y al salir de `simularEncuentro`, el heroe desaparece del stack pero el arreglo del heap sigue vigente porque nadie lo liberó. La consecuencia es que el programa va consumiendo cada vez mas RAM. Lo que pasaria en un juego es que despues de muchos encuentros, se pone lento o hasta crashear por falta de memoria
-
-- Error 2: se realiza una copia de forma incorrecta, la linea: `Personaje copiaHeroe = heroe;` hace una copia la informacion que contiene asi que tambien copia el puntero de la dirección de `estadisticas` tal cual en vez de copiar el valor de cada estadistica. Ocurre porque en el stack quedan dos objetos distinto: `heroe` y `copiaHeroe` pero en el heap no se crean nuevas estadisticas sino que ambos apuntan al mismo bloque. La consecuencia es que si cambias las estadisticas en uno, cambian en el otro y si intentas arreglar la fuga agregando un destructor con `delete[]` entonces ambos objetos intentarian liberar el mismo arreglo
+- Error 1: La clase del constructor hace: `estadisticas = new int[3];` pero aquel espacio de la memoria no se libera. Esto ocurre porque el heroe es un objeto local que vive en el stack, `estadisticas` apunta a un arreglo que vive en el heap y al salir de `simularEncuentro`, el heroe desaparece del stack pero el arreglo del heap seguirá ahí ya que no fué liberado. Este error lleva a que a lo largo del juego, mientras mas se sumen encuentros, la memoria seguirá ocupandose hasta que crashee porque no va a ser liberado el espacio de esta.
+  
+- Error 2: La copia: `Personaje copiaHeroe = heroe;` está mal hecha, ya que hace una copia la informacion que contienetambien el puntero de `estadisticas` tal cual en vez de copiar el valor de cada estadistica. Ocurre porque en el stack quedan dos objetos distinto: `heroe` y `copiaHeroe` pero en el heap no se crean otras estadisticas sino que ambos apuntan al mismo bloque. Esto hace que si se intentara cambiar las stats de uno de los objetos, el otro tendría el mismo cambio.
 
 
 2. USA EL DEPURADOR
 
 Error 1
-<img width="684" height="619" alt="image" src="https://github.com/user-attachments/assets/ea6ea92e-6eb8-4930-ba55-07af3a57af4f" />
-demuestra que se reservó memoria dinamica
+<img width="941" height="690" alt="image" src="https://github.com/user-attachments/assets/42cca1cb-5098-4290-bfc4-f23046d9054b" />
+El encuentro finalizó y el espacio de memoria no fué liberado
 
 Error 2
-<img width="620" height="333" alt="image" src="https://github.com/user-attachments/assets/a19f1267-f5c9-4377-88ee-a5230a9bd359" />
+<img width="940" height="721" alt="image" src="https://github.com/user-attachments/assets/22a2d246-5872-4cf6-9bd2-c0cedabc5d7f" />
 Tienen la misma direccion para estadisticas
 
 3. Induce los fallos
 
 - Error 1: haciendo esta modificación
 
-  ``` c++
-	for (int i = 0; i < 200000; i++) simularEncuentro();
-  ``` 
-Al inicio
-<img width="764" height="332" alt="image" src="https://github.com/user-attachments/assets/3fc9bb6d-4784-4f07-96d1-3231b9778c8b" />
+<img width="596" height="84" alt="image" src="https://github.com/user-attachments/assets/28642323-41b2-4cfb-99f2-3a9daf2a981c" />
 
-Al finalizar
-<img width="765" height="331" alt="image" src="https://github.com/user-attachments/assets/dab57f29-7267-48c1-9dd6-e37c50fba18c" />
+Al inicio
+<img width="746" height="568" alt="image" src="https://github.com/user-attachments/assets/36ccd33b-1128-4482-bfbd-edb2b3c9beb6" />
+
+Despues de algunos segundos
+<img width="752" height="565" alt="image" src="https://github.com/user-attachments/assets/1a2d88b9-3037-435e-bddc-7428d21c964b" />
 
 - Error 2: agregando esto despues de crear la copia
 
-``` c++
-copiaHeroe.estadisticas[0] = 561532; // vida
-heroe.imprimir();
-copiaHeroe.imprimir();
-```
+<img width="714" height="175" alt="image" src="https://github.com/user-attachments/assets/67292b69-5f85-411c-8dbf-cb4ade073909" />
 
-<img width="486" height="265" alt="image" src="https://github.com/user-attachments/assets/d4a1c6fb-7e25-4f84-80f6-0f6d4a00bdf1" />
+DEMOSTRACIÓN:
+<img width="563" height="81" alt="image" src="https://github.com/user-attachments/assets/16852d99-84d1-4963-98de-4efad2fd87ef" />
 
 
 4. Solución y refactorización (síntesis y creación)
 
-para el error 1, en lugar de intentar corregir el problema agregando destructor y manejando manuealmente `new` y `delete[]`, seria mejor eliminar la gestion manual de memoria dinamica dado que el arreglo de estadisticas tiene un tamaño fijo, se reemplazaria:
+Reemplazar el `int* estadisticas;` por un array de tres espacios que permita guardar los datos dentro del objeto y así evitar fugas de memoria. (recordar agregar el include de arrays)
 
-``` c++
-int* estadisticas;
-```
-por
-```c++
-std::array<int, 3> estadisticas;
-```
-
-esto permitiria almacenar las estadisticas directamente dentro del objeto, evita el uso de `new` y `delete`, permite que la copia del objeto sea segura  
 
 Refactorizando
 
@@ -1026,7 +1013,7 @@ Refactorizando
 class Personaje {
 public:
     std::string nombre;
-    std::array<int, 3> estadisticas; // [vida, ataque, defensa]
+    std::array<int, 3> estadisticas; 
 
     Personaje(const std::string& n, int vida, int ataque, int defensa)
         : nombre(n), estadisticas{vida, ataque, defensa} {
