@@ -18,11 +18,11 @@
   El depurador muestra que tanto front como rear tienen el valor NULL, lo que confirma que no existen nodos en la estructura antes de la inserción.
   Debido a esta condición, el algoritmo ejecutará las instrucciones:
 
-´´´ C++
+``` C++
 front = newNode;
 rear = newNode;
-
-´´´
-
+```
+  lo cual establece correctamente el primer nodo de la cola. Esto garantiza que la estructura FIFO queda inicializada correctamente y que futuras inserciones podrán agregarse al final utilizando el puntero rear.
 
 ## Bitácora de reflexión
+
