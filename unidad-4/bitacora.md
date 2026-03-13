@@ -50,8 +50,45 @@ rear = newNode;
 
 ### Evidencia 3 (comportamiento de eliminación y prevención de fugas (dequeue))
 
+(No me está dejando subir capturas a partir de aquí)
 
+- Variables y valores específicos
+  - temp: Contiene la dirección de memoria del nodo apuntado originalmente por front. Este nodo corresponde al elemento más antiguo de la cola y se almacena temporalmente para poder eliminarlo correctamente después de actualizar la estructura.
+  - front: Inicialmente apuntaba al primer nodo de la cola. Tras ejecutar la instrucción front = front->next, este puntero se actualiza para señalar el siguiente nodo de la estructura. Si existían más nodos, ahora apunta al que ocupaba la segunda posición; si solo existía un nodo, pasa a tener el valor NULL, indicando que la cola queda vacía.
+  - front->next: Representa el nodo que seguirá al nuevo front dentro de la cola. Este valor permite verificar que la estructura enlazada continúa siendo válida después de la eliminación del nodo más antiguo.
+  - rear: Continúa apuntando al último nodo de la cola y no se modifica durante esta operación, ya que la eliminación ocurre únicamente en el inicio de la estructura. Solo cambiaría si la cola quedara completamente vacía.
+  - size: Disminuye en una unidad después de ejecutar size--, lo que refleja correctamente que el número total de nodos almacenados en la cola ha sido reducido.
+  - this: Representa la instancia actual del objeto BrushQueue, desde donde se puede observar el estado interno de la cola antes y después de la eliminación.
+
+- Justificación
+  Esta evidencia demuestra que la función dequeue() elimina correctamente el nodo más antiguo de la cola, cumpliendo con el principio FIFO (First In, First Out). Al actualizar el puntero front hacia el siguiente nodo, la estructura conserva el orden de los elementos restantes, permitiendo que el siguiente nodo insertado pase a ocupar la primera posición.
+
+  Además, el nodo eliminado se libera explícitamente mediante la instrucción delete temp, lo que garantiza que la memoria dinámica utilizada por dicho nodo no permanezca reservada. Esto previene fugas de memoria y confirma que la implementación gestiona adecuadamente los recursos del sistema.
+
+  Si la cola queda vacía tras la eliminación, los punteros front y rear se establecen en NULL, asegurando que la estructura permanezca en un estado consistente.
+
+### Evidencia 4 (control del tamaño máximo de la cola (maxSize))
+
+(sigo sin poder subir los pantallazos)
+
+- Variables y valores específicos
+  - size: Tiene un valor mayor que maxSize, lo que indica que la cola ha superado el número máximo de nodos permitido tras la inserción de un nuevo elemento.
+  - maxSize: Representa el límite máximo de nodos que puede almacenar la cola. Este valor se mantiene constante durante la operación y sirve como referencia para determinar cuándo debe eliminarse un nodo antiguo.
+  - front: Apunta al nodo más antiguo de la cola, el cual será eliminado mediante la función dequeue() para reducir el tamaño de la estructura.
+  - rear: Apunta al nodo más reciente insertado, que permanece en la cola y no se ve afectado por la eliminación del nodo frontal.
+  - this: Representa la instancia actual del objeto BrushQueue, desde donde se puede observar el estado completo de la estructura en el momento en que se detecta el exceso de tamaño.
+
+- Justificacion
+  Esta evidencia demuestra que la cola implementa correctamente un control de tamaño máximo. Cuando el número de nodos almacenados supera el valor de maxSize, se ejecuta automáticamente la función dequeue(), eliminando el nodo más antiguo de la estructura.
+
+  Este mecanismo garantiza que la cola mantenga un tamaño constante y evita un crecimiento ilimitado que podría provocar un consumo excesivo de memoria. Además, al eliminar siempre el nodo frontal, se conserva el principio FIFO, asegurando que los elementos más antiguos sean los primeros en salir.
+
+
+### Evidencia 5 (Evidencia 5: recorrido de la cola sin destruirla (draw))
+
+(nada que me vuelve a dejar subir pantallazos)
 ## Bitácora de reflexión
+
 
 
 
