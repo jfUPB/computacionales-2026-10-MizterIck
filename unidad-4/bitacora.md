@@ -47,6 +47,11 @@ rear = newNode;
   Esta evidencia demuestra que la operación enqueue() mantiene correctamente el orden FIFO de la cola. El nuevo nodo se inserta siempre al final de la estructura enlazada mediante el puntero rear->next. Posteriormente, el puntero rear se actualiza para señalar el nuevo último nodo de la cola.
 
   Este mecanismo garantiza que los elementos se agregan en orden de llegada y que el primer nodo insertado permanece en la posición frontal de la cola hasta que se ejecute la operación dequeue().
+
+### Evidencia 3 (comportamiento de eliminación y prevención de fugas (dequeue))
+
+
 ## Bitácora de reflexión
+
 
 
