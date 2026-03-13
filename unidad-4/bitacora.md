@@ -86,7 +86,8 @@ rear = newNode;
 
 ### Evidencia 5 (Evidencia 5: recorrido de la cola sin destruirla (draw))
 
-(nada que me vuelve a dejar subir pantallazos)
+<img width="942" height="883" alt="1000071859" src="https://github.com/user-attachments/assets/640303b7-8934-4848-bd0a-54ea9cb02eae" />
+
 
 - Variables y valores específicos
   - current: Contiene la dirección de memoria 0x00000155c738eb90, lo que indica que el puntero auxiliar está apuntando a un nodo válido de la cola y se está utilizando para recorrerla.
@@ -102,8 +103,8 @@ rear = newNode;
 ## Bitácora de reflexión
 
 ### Evidencia 6 (limpieza total de la memoria (clear))
-
-(no me dejó volver a hacer pantallazos (igual puedo explicar lo que sucede))
+<img width="941" height="469" alt="1000071857" src="https://github.com/user-attachments/assets/fb6ea9cf-1b91-47e0-802a-fd819984ebe7" />
+<img width="924" height="479" alt="1000071858" src="https://github.com/user-attachments/assets/e136ce97-25e8-4187-860c-01d16d996daf" />
 
 - Variables y valores específicos (1)
   - key: Tiene valor 99, que corresponde al carácter 'c' en ASCII, indicando que el usuario presionó la tecla C.
