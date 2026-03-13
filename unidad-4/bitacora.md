@@ -87,7 +87,41 @@ rear = newNode;
 ### Evidencia 5 (Evidencia 5: recorrido de la cola sin destruirla (draw))
 
 (nada que me vuelve a dejar subir pantallazos)
+
+- Variables y valores específicos
+  - current: Contiene la dirección de memoria 0x00000155c738eb90, lo que indica que el puntero auxiliar está apuntando a un nodo válido de la cola y se está utilizando para recorrerla.
+  - strokes.front: Apunta a la dirección 0x00000155c738eb90, indicando el primer nodo de la cola.
+  - strokes.rear: Apunta a la misma dirección que front, lo que indica que la cola contiene un solo nodo en este momento.
+  - strokes.size: Tiene valor 1, confirmando que hay un elemento almacenado en la cola.
+  - strokes.maxSize: Tiene valor 50, correspondiente a la capacidad máxima configurada.
+
+- Justificación
+  Esta evidencia demuestra que la función draw() recorre la cola utilizando un puntero auxiliar (current) para acceder a cada nodo sin modificar la estructura original. Los punteros front y rear permanecen intactos durante el proceso, lo que confirma que los nodos no se eliminan ni se alteran.
+
+  El acceso a los atributos del nodo (x, y, radius, color y opacity) evidencia que los datos almacenados se utilizan únicamente para renderizar los trazos en pantalla. Por lo tanto, se valida que el recorrido de la cola se realiza sin destruirla, cumpliendo con el comportamiento esperado de una estructura FIFO utilizada como contenedor de los segmentos del gusano.
 ## Bitácora de reflexión
+
+### Evidencia 6 (limpieza total de la memoria (clear))
+
+(no me dejó volver a hacer pantallazos (igual puedo explicar lo que sucede))
+
+- Variables y valores específicos (1)
+  - key: Tiene valor 99, que corresponde al carácter 'c' en ASCII, indicando que el usuario presionó la tecla C.
+  - strokes.front: Apunta a la dirección 0x00000246689b9520, correspondiente al primer nodo almacenado.
+  - strokes.rear: Apunta a la dirección 0x00000246689dd3d0, correspondiente al último nodo de la cola.
+  - strokes.size: Tiene valor 35, lo que indica que existen 35 nodos en memoria.
+- Variables y valores específicos (2)
+  - key: Sigue siendo 99 ('c'), confirmando que la acción fue provocada por la tecla C.
+  - strokes.front: Tiene valor NULL, lo que indica que ya no existe ningún nodo al inicio de la cola.
+  - strokes.rear: También es NULL, indicando que no queda ningún nodo al final.
+  - strokes.size: Tiene valor 0, confirmando que todos los nodos fueron eliminados.
+
+- Justificacion
+  Esta evidencia demuestra que la función clear() elimina completamente todos los nodos de la cola cuando el usuario presiona la tecla C.
+
+  En la primera captura se observa que la cola contiene múltiples elementos (size = 35) y que los punteros front y rear apuntan a nodos válidos en memoria. Tras ejecutar la instrucción strokes.clear(), la segunda captura muestra que ambos punteros pasan a ser NULL y el tamaño de la cola se reduce a 0, lo que confirma que todos los nodos fueron eliminados y la memoria dinámica asociada fue liberada.
+
+  El hecho de que la variable key tenga el valor 99 en ambas capturas valida que esta limpieza se produjo específicamente por la acción del usuario al presionar la tecla C y no por otros mecanismos del programa, como el control de tamaño máximo.
 
 
 
