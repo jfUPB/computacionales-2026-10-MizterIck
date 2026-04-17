@@ -7,6 +7,9 @@
 1. 
 
 ## Bitácora de aplicación 
+
+FASE 1
+
 ofApp.cpp
 
 ``` c++
@@ -367,4 +370,93 @@ private:
 };
 
 ```
+
+FASE 2
+
+EVIDENCIA 1:
+
+<img width="932" height="779" alt="image" src="https://github.com/user-attachments/assets/d73b4651-dfcf-4124-aafe-4212e095a022" />
+
+Se colocó el breakpoint en la rama else if (type == "comet") porque es donde se crea y configura el nuevo tipo de partícula. Este punto permite verificar que el programa entra en la condición correcta y observar los valores del objeto Particle recién creado, confirmando que sus atributos (tamaño, color y velocidad) se asignan correctamente.
+
+EXPLICACIÓN: 
+En la captura se observa la ejecución del método ParticleFactory::createParticle, donde el valor del parámetro type es "comet". El flujo del programa entra correctamente en la rama correspondiente a este tipo de partícula.
+
+Se puede inspeccionar el objeto particle, el cual ya ha sido creado dinámicamente. En este punto se observan sus atributos, incluyendo el tamaño (size), el color (color) configurado como amarillo (255,255,0) y la velocidad (velocity), la cual está siendo modificada en esta sección del código.
+
+JUSTIFICACIÓN:
+Se eligió este punto de inspección porque permite verificar directamente qué rama del condicional se ejecuta dentro de la fábrica. Además, permite observar el estado interno del objeto Particle inmediatamente después de su creación y durante su configuración.
+
+Esto confirma que el nuevo tipo "comet" está correctamente integrado en la ParticleFactory, tanto en la selección de la rama como en la asignación de sus propiedades específicas.
 ## Bitácora de reflexión
+
+EVIDENCIA 2:
+
+Spiral
+<img width="925" height="504" alt="image" src="https://github.com/user-attachments/assets/ec550329-3e9b-45c0-9ada-c19f401403cb" />
+
+Normal
+<img width="919" height="509" alt="image" src="https://github.com/user-attachments/assets/669f4338-b9f9-48ee-8153-446052cd929f" />
+
+Se colocó el breakpoint en el método setState, después de la asignación del nuevo estado (state = newState), ya que en este punto el objeto es válido y se puede inspeccionar correctamente su _vtable.
+
+¿Qué entradas cambian?
+La principal diferencia se encuentra en la entrada de la función update(Particle*), cuya dirección de memoria es distinta en cada estado.
+
+EXPLICACIÓN:
+Al comparar ambas capturas, se observa que la _vtable contiene diferentes direcciones de funciones según el estado activo. En particular, la entrada correspondiente al método update cambia:
+
+En NormalState, apunta a NormalState::update
+En SpiralState, apunta a SpiralState::update
+
+Esto indica que cada clase tiene su propia implementación de los métodos virtuales.
+
+JUSTIFICACIÓN:
+Las entradas de la _vtable cambian porque cada estado redefine métodos virtuales de la clase base State. Esto permite que, a través de un puntero State*, se ejecute en tiempo de ejecución la función correspondiente al tipo real del objeto.
+
+Este comportamiento corresponde al polimorfismo dinámico.
+
+EVIDENCIA 3:
+
+<img width="933" height="314" alt="image" src="https://github.com/user-attachments/assets/7d264327-6b1a-4344-ae91-33086bf5514a" />
+En esta captura se observa la ejecución del método keyPressed al presionar la tecla 'p'. El programa se detiene justo en la llamada a notify("spiral"), lo que indica que se está generando el evento que será enviado a todos los observadores.
+
+<img width="941" height="651" alt="image" src="https://github.com/user-attachments/assets/3d1ab255-7264-4db0-a50e-5f4a95a88eed" />
+En esta captura se observa la ejecución del método onNotify en una partícula. El valor del parámetro event es "spiral", lo que hace que se cumpla la condición del if correspondiente.
+
+Como resultado, se ejecuta la llamada a setState(new SpiralState()), iniciando el cambio de estado de la partícula. Además, se puede observar que el puntero state comienza a apuntar a una instancia de SpiralState.
+
+<img width="933" height="588" alt="image" src="https://github.com/user-attachments/assets/29065bfd-07d9-490f-81a1-6630330a6820" />
+Se eligió este punto de inspección dentro del método setState porque es el momento en el que se realiza la asignación del nuevo estado a la partícula. Esto permite verificar directamente que el puntero state cambia y pasa a apuntar a una instancia de SpiralState.
+
+De esta forma, se confirma que el evento recibido ha producido correctamente la transición de estado, completando el flujo desde la notificación hasta la modificación del comportamiento de la partícula.
+
+EXPLICACIÓN:
+Al presionar la tecla 'p', se ejecuta el método keyPressed, donde se llama a notify("spiral"). Este método envía el evento a todas las partículas registradas como observadores.
+
+Luego, en el método onNotify, cada partícula recibe el evento "spiral", lo que provoca la ejecución de setState(new SpiralState()).
+
+Finalmente, en el método setState, se observa que el puntero state es actualizado con el valor de newState, y ambos apuntan a una instancia de SpiralState, confirmando el cambio de estado.
+
+JUSTIFICACIÓN:
+Los puntos de inspección elegidos permiten seguir paso a paso cómo un evento generado por el usuario se propaga mediante el patrón Observer y desencadena un cambio de estado en las partículas.
+
+Esto demuestra la correcta integración entre los patrones Observer y State, permitiendo modificar dinámicamente el comportamiento de los objetos en tiempo de ejecución.
+
+EVIDENCIA 4:
+
+<img width="925" height="504" alt="image" src="https://github.com/user-attachments/assets/ccaaabb3-f4c7-4578-a538-bc5b433ddc03" />
+En la captura se observa que el puntero state apunta a una instancia de SpiralState. Además, en su _vtable se encuentra la función SpiralState::update, lo que indica que el comportamiento ejecutado corresponde específicamente a esta clase.
+
+EXPLICACIÓN:
+El estado SpiralState fue implementado como una clase que hereda directamente de State, en lugar de reutilizar o extender otro estado existente como NormalState o AttractState.
+
+La presencia de SpiralState::update en la _vtable demuestra que este estado tiene su propia implementación del método virtual update, independiente de otros estados como NormalState o AttractState.
+
+JUSTIFICACIÓN:
+Se decidió heredar directamente de State para mantener una separación clara de responsabilidades y evitar dependencias innecesarias entre estados. Cada estado representa un comportamiento distinto, por lo que no es adecuado reutilizar lógica de otro estado que responde a una intención diferente.
+
+Esta decisión mejora la claridad del diseño, facilita el mantenimiento del código y permite agregar nuevos estados sin afectar los existentes, aprovechando correctamente el polimorfismo.
+
+
+
