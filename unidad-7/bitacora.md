@@ -35,6 +35,97 @@ Además, la estructura del ciclo principal (game loop), donde en cada iteración
 
 En general, el flujo consiste en enviar instrucciones desde el CPU usando OpenGL, que luego son ejecutadas por la GPU para generar la imagen final.
 
+(3)
+
+Cuando cambié a GL_LINES, el triángulo dejó de verse como tal y en su lugar apareció una línea. Esto ocurre porque OpenGL ahora interpreta los vértices en pares, dibujando segmentos de línea entre ellos en lugar de formar triángulos.
+
+Al usar GL_POINTS, solo se mostraron puntos en la pantalla. En mi caso, observé un punto visible hacia el lado derecho, lo que indica que OpenGL dibuja cada vértice como un punto individual, sin conectarlos entre sí.
+
+Por otro lado, al modificar el tercer parámetro de glDrawArrays (la cantidad de vértices), noté que cuando el valor era menor a 3, el triángulo desaparecía. Esto se debe a que un triángulo necesita al menos tres vértices para poder formarse.
+
+Cuando el valor era mayor a 3, el resultado visual no cambiaba en este caso, ya que solo se habían definido tres vértices en el buffer, por lo que OpenGL no tenía más datos válidos para dibujar.
+
+(4)
+
+¿Qué es el contexto OpenGL?
+
+Es como el “espacio de trabajo” donde OpenGL guarda todo lo que necesita para funcionar: shaders, buffers, configuraciones, etc.
+Si no hay contexto, OpenGL básicamente no puede hacer nada, porque no sabe dónde dibujar ni qué recursos tiene disponibles.
+
+¿Cuál es el rol de GLFW y qué ventaja tiene usarla?
+
+GLFW es la que se encarga de crear la ventana y el contexto OpenGL, además de manejar teclado, mouse, etc.
+La ventaja es que te ahorra lidiar con cosas específicas del sistema operativo. O sea, no tienes que programar diferente para Windows, Linux o Mac.
+
+¿Por qué OpenGL necesita un contexto?
+
+Usando la analogía: OpenGL es el artista, pero necesita un taller (el contexto).
+Sin ese taller, no tiene dónde guardar sus herramientas ni dónde trabajar. El contexto le dice qué recursos existen y dónde se va a dibujar.
+
+¿Qué es el framebuffer y a qué te recuerda?
+
+El framebuffer es como una “pantalla interna” donde la GPU dibuja todo antes de mostrarlo.
+Me recuerda a cuando en unidades anteriores trabajábamos con una matriz de píxeles o una imagen en memoria antes de mostrarla.
+
+¿Relación entre viewport y framebuffer?
+
+El framebuffer es toda la “hoja” donde se dibuja.
+El viewport es una parte de esa hoja.
+
+Es como decir:
+
+framebuffer = toda la pantalla
+viewport = el área donde decides dibujar
+
+¿Qué rol juegan los drivers y la GPU?
+
+La GPU es la que hace el trabajo pesado: dibujar, procesar vértices, etc.
+Los drivers son como el traductor entre OpenGL y la GPU.
+
+O sea:
+
+tú = escribes código OpenGL
+OpenGL = manda instrucciones
+drivers = las traducen
+GPU = ejecuta todo
+
+¿Por qué activar VSync?
+
+VSync sincroniza los frames con la pantalla para evitar que se “rompa” la imagen (tearing).
+
+Si la imagen es estática → casi no pasa nada si lo quitas
+Si es dinámica → se puede ver como “cortada” o desalineada
+
+¿Qué es OpenGL Legacy vs moderno?
+
+Legacy: tenía funciones fijas (tipo glBegin, glEnd), menos control
+Moderno: usa shaders, tú decides cómo funciona el pipeline
+
+La diferencia clave:
+antes OpenGL decidía cómo dibujar
+ahora tú programas cómo dibujar
+
+¿Qué es el shader program?
+
+Es el programa que corre en la GPU y le dice cómo procesar los datos:
+
+vertex shader → qué hacer con los vértices
+fragment shader → qué color poner
+
+Es obligatorio en OpenGL moderno, sin shaders no se dibuja nada.
+
+¿Qué hace setupTriangle()? ¿Qué son VAO y VBO?
+
+Intuitivamente:
+
+define los vértices del triángulo
+los manda a la GPU
+
+VBO:
+guarda los datos (los vértices)
+
+VAO:
+guarda cómo usar esos datos (configuración)
 
 
 ## Bitácora de aplicación 
