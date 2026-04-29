@@ -2,6 +2,7 @@
 
 ## Bitácora de proceso de aprendizaje
 Actividad 02
+
 Actividad 03
 ## Bitácora de aplicación 
 
