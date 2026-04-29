@@ -322,6 +322,300 @@ Invierte el eje Y (porque en pantalla Y crece hacia abajo, pero en OpenGL hacia 
 
 Fase 1
 
+``` c++
+#include <iostream>
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
+// Callback viewport
+void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+    glViewport(0, 0, width, height);
+}
+
+// Input
+void processInput(GLFWwindow* window) {
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+}
+
+const unsigned int SCR_WIDTH = 600;
+const unsigned int SCR_HEIGHT = 600;
+
+// Vertex Shader
+const char* vertexShaderSrc = R"glsl(
+#version 460 core
+layout(location = 0) in vec3 aPos;
+
+uniform vec2 offset;
+
+void main() {
+    vec3 newPos = aPos;
+    newPos.x += offset.x;
+    newPos.y += offset.y;
+    gl_Position = vec4(newPos, 1.0);
+}
+)glsl";
+
+// Fragment Shader
+const char* fragmentShaderSrc = R"glsl(
+#version 460 core
+out vec4 FragColor;
+
+uniform vec4 ourColor;
+
+void main() {
+    FragColor = ourColor;
+}
+)glsl";
+
+unsigned int VAO, VBO;
+unsigned int shaderProg;
+
+// Crear shader program
+unsigned int buildShaderProgram(const char* vertexSrc) {
+    int success;
+    char log[512];
+
+    unsigned int vs = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vs, 1, &vertexSrc, nullptr);
+    glCompileShader(vs);
+    glGetShaderiv(vs, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(vs, 512, nullptr, log);
+        std::cerr << "ERROR VERTEX:\n" << log << "\n";
+    }
+
+    unsigned int fs = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fs, 1, &fragmentShaderSrc, nullptr);
+    glCompileShader(fs);
+    glGetShaderiv(fs, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(fs, 512, nullptr, log);
+        std::cerr << "ERROR FRAGMENT:\n" << log << "\n";
+    }
+
+    unsigned int prog = glCreateProgram();
+    glAttachShader(prog, vs);
+    glAttachShader(prog, fs);
+    glLinkProgram(prog);
+    glGetProgramiv(prog, GL_LINK_STATUS, &success);
+    if (!success) {
+        glGetProgramInfoLog(prog, 512, nullptr, log);
+        std::cerr << "ERROR LINK:\n" << log << "\n";
+    }
+
+    glDeleteShader(vs);
+    glDeleteShader(fs);
+
+    return prog;
+}
+
+// Triángulo
+void setupTriangle() {
+    float vertices[] = {
+        -0.2f, -0.2f, 0.0f,
+         0.2f, -0.2f, 0.0f,
+         0.0f,  0.2f, 0.0f
+    };
+
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glBindVertexArray(0);
+}
+
+int main() {
+
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    GLFWwindow* mainWindow = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Triangulo Interactivo", NULL, NULL);
+    if (!mainWindow) {
+        std::cout << "Error creando ventana\n";
+        glfwTerminate();
+        return -1;
+    }
+
+    glfwMakeContextCurrent(mainWindow);
+    glfwSetFramebufferSizeCallback(mainWindow, framebuffer_size_callback);
+
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        std::cout << "Error GLAD\n";
+        return -1;
+    }
+
+    glfwSwapInterval(1);
+
+    shaderProg = buildShaderProgram(vertexShaderSrc);
+    setupTriangle();
+
+    glUseProgram(shaderProg);
+    int offsetLocation = glGetUniformLocation(shaderProg, "offset");
+    int colorLocation = glGetUniformLocation(shaderProg, "ourColor");
+
+    while (!glfwWindowShouldClose(mainWindow))
+    {
+        glfwPollEvents();
+        processInput(mainWindow);
+
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        glUseProgram(shaderProg);
+
+        double xpos, ypos;
+        glfwGetCursorPos(mainWindow, &xpos, &ypos);
+
+        float x = (float)xpos / (float)SCR_WIDTH;
+        if (x < 0) x = 0;
+        if (x > 1) x = 1;
+
+        float y = (float)ypos / (float)SCR_HEIGHT;
+        if (y < 0) y = 0;
+        if (y > 1) y = 1;
+
+        glUniform4f(colorLocation, x, y, 0.0f, 1.0f);
+        glUniform2f(offsetLocation, x * 2 - 1, 1 - y * 2);
+
+        glBindVertexArray(VAO);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        glfwSwapBuffers(mainWindow);
+    }
+
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteProgram(shaderProg);
+
+    glfwDestroyWindow(mainWindow);
+    glfwTerminate();
+    return 0;
+}
+
+```
+
+Fase 2
+
+Evidencia 1
+<img width="932" height="454" alt="image" src="https://github.com/user-attachments/assets/f3a158c0-fb7d-44ff-a6d7-5f49735afff3" />
+
+Explicación de la evidencia
+
+En la captura se observa que el programa ha ejecutado glfwMakeContextCurrent(mainWindow) antes de llamar a gladLoadGLLoader. Esto indica que el contexto de OpenGL ya fue creado y activado por GLFW.
+
+Además, se puede ver que tanto mainWindow como glfwGetProcAddress tienen direcciones válidas en memoria, lo que confirma que GLFW inicializó correctamente el entorno antes de que GLAD intente cargar las funciones de OpenGL.
+
+Justificación
+
+GLFW debe ejecutarse antes que GLAD porque es el encargado de crear el contexto de OpenGL. GLAD, por su parte, necesita ese contexto activo para poder obtener las direcciones de las funciones de OpenGL desde los drivers de la GPU.
+
+Si se intentara cargar GLAD antes de crear el contexto, la carga fallaría porque no existiría un entorno válido desde el cual obtener dichas funciones.
+
+Evidencia 2
+<img width="938" height="518" alt="image" src="https://github.com/user-attachments/assets/75a5db22-3929-4717-ac51-8d3fb222f4b9" />
+<img width="929" height="621" alt="image" src="https://github.com/user-attachments/assets/d7e83c10-d678-44dd-b65b-f99c28e21b12" />
+
+Explicación de la evidencia
+
+En la primera captura se observa el arreglo vertices definido en el código C++, el cual contiene las coordenadas de los vértices del triángulo. En ese momento, los datos aún se encuentran en la memoria de la CPU y están siendo enviados a la GPU mediante la función glBufferData, lo que implica su almacenamiento en un Vertex Buffer Object (VBO).
+
+En la segunda captura se muestra el momento previo a la ejecución de glDrawArrays, donde el programa de shaders ha sido activado con glUseProgram(shaderProg) y el VAO se encuentra enlazado mediante glBindVertexArray(VAO). Además, se están enviando valores a los uniforms del shader, lo que indica que el pipeline ya está completamente configurado.
+
+Esto evidencia el flujo completo de datos: desde su definición en CPU, pasando por su transferencia a la GPU, su configuración mediante el VAO, hasta su uso final en el shader para generar la imagen en pantalla.
+
+Justificación
+
+Estas capturas demuestran que el acceso a los datos por parte del shader no es directo, sino que ocurre a través del pipeline de OpenGL. Primero, los datos son transferidos desde la CPU a la GPU mediante un VBO. Luego, el VAO define cómo deben interpretarse esos datos y a qué atributos del shader están asociados. Finalmente, cuando se ejecuta glDrawArrays, OpenGL toma esos datos ya configurados y los envía al vertex shader activo.
+
+Esto confirma que existe una separación clara entre la gestión de datos en la CPU y su procesamiento en la GPU, y que el flujo de información depende del estado configurado en OpenGL (VAO, VBO y shader program), no de accesos directos a memoria desde el shader.
+
+Evidencia 3
+
+<img width="927" height="419" alt="image" src="https://github.com/user-attachments/assets/aa712803-139e-476a-8482-293446b271fe" />
+<img width="939" height="413" alt="image" src="https://github.com/user-attachments/assets/bd1e7be9-1fb0-44ea-9c10-c8770708c16a" />
+<img width="932" height="408" alt="image" src="https://github.com/user-attachments/assets/e094841f-068b-477c-bced-5c01d4f28a21" />
+
+Explicación de la evidencia
+
+En la primera captura se observa cómo el arreglo de vértices es enviado al GPU mediante glBufferData, estableciendo el contenido del VBO. Este proceso ocurre una sola vez durante la inicialización y no se vuelve a ejecutar dentro del loop principal.
+
+En las capturas posteriores se observa cómo los valores de los uniforms (x, y) cambian dinámicamente en cada frame, afectando la posición y el color del triángulo en pantalla.
+
+Esto demuestra que el VBO permanece constante y que los cambios visuales se logran mediante uniforms, los cuales modifican el comportamiento del shader sin alterar los datos originales.
+
+Justificación
+
+El comportamiento observado se explica por la forma en que funciona el pipeline de OpenGL y la separación de responsabilidades entre sus componentes.
+
+El Vertex Buffer Object (VBO) almacena los datos de los vértices en la memoria de la GPU y, en este caso, se inicializa una sola vez mediante la función glBufferData. Como este proceso ocurre fuera del loop principal, los datos permanecen constantes durante toda la ejecución del programa.
+
+Por otro lado, los uniforms (offset y ourColor) son variables globales dentro del shader que pueden actualizarse en cada frame desde el código C++. Estas variables no modifican los datos del VBO, sino que alteran la forma en que el shader interpreta esos datos:
+
+El offset modifica la posición de los vértices en el vertex shader.
+El ourColor define el color final en el fragment shader.
+
+Esto implica que el mismo conjunto de vértices puede producir diferentes resultados visuales sin necesidad de modificar la geometría original.
+
+En términos del pipeline, el VBO representa los datos de entrada, mientras que los uniforms representan parámetros de procesamiento dinámico. Esta separación permite mayor eficiencia, ya que evita tener que reenviar datos a la GPU en cada frame y delega las transformaciones al shader.
+
+Evidencia 4
+
+<img width="1570" height="906" alt="image" src="https://github.com/user-attachments/assets/4c717f7c-a640-4003-8d99-3e89f1245a7e" />
+
+Cambiar el offset que se tenía en el código por
+
+``` c++
+glUniform2f(offsetLocation, 2.0f, 2.0f);
+```
+
+¿Qué esperaba que pasara?
+
+Se esperaba que en este experimento el triangulo desapareciera de la pantalla, puesto a que este se desplazaría fuera de esta.
+
+¿Que ocurrió?
+
+Efectivamente el triangulo desapareció de la pantalla, sin errores de consola ni nada extraño.
+
+Conclusiones
+
+El resultado muestra que el triángulo desaparece porque el offset lo mueve fuera del rango visible de las coordenadas NDC ([-1, 1]). En esta etapa del pipeline, OpenGL aplica clipping, descartando automáticamente cualquier geometría fuera de ese espacio.
+
+Es importante notar que el VBO no cambia; los datos del triángulo siguen iguales en memoria. El cambio visual ocurre únicamente por el uniform offset, que modifica la posición de los vértices en el vertex shader.
+
+En conclusión, esto demuestra que los uniforms afectan el resultado visual sin modificar la geometría, y que muchos errores visuales provienen del estado del pipeline y no de los datos originales.
+
+Evidencia 5
+
+<img width="929" height="420" alt="image" src="https://github.com/user-attachments/assets/3c1b5680-e341-47a2-bca1-82ae8a2893bb" />
+
+Usar offset como uniform en lugar de atributo de vértice
+
+Explicación
+
+Decidí implementar el desplazamiento del triángulo usando un uniform (offset) en lugar de un atributo porque el movimiento que quiero aplicar es el mismo para todos los vértices.
+
+Un atributo de vértice sirve para enviar datos diferentes por vértice (como posición o color), mientras que un uniform es un valor global que se mantiene constante durante todo el draw call. En este caso, el desplazamiento es único para toda la figura, por lo que tiene más sentido usar un uniform.
+
+Justificación
+
+Usar un uniform es más eficiente y adecuado porque evita modificar el VBO cada frame. Si hubiera usado un atributo, tendría que actualizar los datos de cada vértice constantemente, lo cual implica más operaciones en CPU y transferencia de datos a la GPU.
+
+Además, al usar un uniform, el cálculo del desplazamiento se realiza directamente en el vertex shader, aprovechando la GPU y manteniendo el VBO como un conjunto de datos estáticos.
+
+Esto respeta la lógica del pipeline de OpenGL, donde:
+
+El VBO almacena la geometría base
+Los uniforms controlan transformaciones globales
+El shader aplica las modificaciones en tiempo real
 
 
 ## Bitácora de reflexión
